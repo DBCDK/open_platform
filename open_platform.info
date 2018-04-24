@@ -1,0 +1,10 @@
+name = Recommender client, using Open Platform
+description = Provides recommentations, based on PID(s)
+core = 7.x
+version = 7.x-0.1
+package = Bibliotek.dk
+
+files[] = open_platform.request.inc
+files[] = test/open_platform.test
+
+dependencies[] = ting_client

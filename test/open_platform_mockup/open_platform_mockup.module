@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Module file for open_platform_mockup_example.
+ */
+
+/**
+ * @defgroup open_platform_mockup Example: Page
+ */
+ 
+/**
+ * Implements hook_menu().
+ *
+ */
+function open_platform_mockup_menu() {
+  $items['mockups/open_platform_mockup'] = array(
+    'title' => 'Open Platform mockup',
+    'page callback' => 'open_platform_mockup_callback',
+    'access callback' => TRUE,
+    'expanded' => TRUE,
+  );
+  $items['mockups/open_platform_mockup/request/%/%'] = array(
+    'page callback' => 'open_platform_mockup_request',
+    'page arguments' => array(3, 4),
+    'access callback' => true,
+  );
+  return $items;
+}
+
+/**
+ * Page callback.
+ */
+function open_platform_mockup_callback() {
+  return array('#markup' => '<p>Open Platform mockup: enable for tests.</p>');
+}
+
+/**
+ * Page callback.
+ */
+function open_platform_mockup_request($method = 'recommender', $status_code = '200') {
+  $path = drupal_get_path('module', 'open_platform_mockup');
+  if (!file_exists( $path . '/response/' . $method )) {
+    throw new Exception('Mockup file directory don\'t exist: code: ' . $method . '.');
+  }
+  drupal_add_http_header('Content-Type', 'application/json');
+    switch ($status_code) {
+      case '200' :
+      case '401' :
+      case '500' :
+        http_response_code($status_code);
+        print file_get_contents($path . '/response/' . $method . '/response.' . $status_code . '.json');
+        break;
+      default :
+        throw new Exception('Untested status code: ' . $status_code . '.');
+        break;
+    }
+  drupal_exit();
+}
+
+/**
+ * @} End of "defgroup open_platform_mockup".
+ */

@@ -1,0 +1,119 @@
+<?php
+
+// load cron job to renew access token
+require_once "includes/open_platform.cron.inc";
+
+/** Implements hook_formID_alter
+ *
+ * Adds settings for Open Platform client
+ *
+ * @see ting_client_admin_webservices_settings
+ * in ting_client.admin.inc
+ *
+ * @param $form
+ * @param $form_state
+ */
+function open_platform_form_ting_client_admin_webservices_settings_alter(&$form, &$form_state) {
+  $form['openPlatform'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Open Platform settings',
+    '#description' => t('The Open Platform service is an abstraction layer for DBC webservices.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => FALSE,
+  );
+  $form['openPlatform']['openplatform_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Open Platform URL'),
+    '#description' => t('URL to openPlatform webservice'),
+    '#required' => TRUE,
+    '#default_value' => variable_get('openplatform_url', ''),
+  );
+}
+
+
+/**
+ * Implements hook_ting_client_webservice (@see ting_client.module)
+ * */
+function open_platform_ting_client_webservice() {
+  $ret = array();
+  $ret['openPlatform']['class'] = 'OpenPlatformRequest';
+  $ret['openPlatform']['url'] = 'openplatform_url';
+  return $ret;
+}
+
+
+/** Generic request function to call Open Platform
+ * @param $method
+ * @param $params
+ * @return json
+ */
+function open_platform_request($method, $params) {
+  $params['curlOptions'] = array(
+    CURLOPT_POST => TRUE,
+    CURLOPT_POSTFIELDS => json_encode($params['requestObject']),
+    CURLOPT_HTTPHEADER => array(
+      'Content-type: application/json',
+      'Accept: application/json'
+    )
+  );
+  $params['action'] = $method . 'Request';
+  $client = new ting_client_class();
+  $response = $client->do_request('openPlatform', $params);
+  open_platform_parse_response($method, $response);
+  return $response;
+}
+
+
+/** Generic parse function for Open Platform response.
+ * @param $method
+ * @response $params
+ * @return json
+ */
+function open_platform_parse_response($method = NULL, $response = NULL) {
+  if (!$response) {
+    return array();
+  }
+  $response = json_decode($response);
+  if (!$response) {
+    throw new Exception("Can't decode response as JSON: " . print_r($response, 1));
+  }
+  switch ($method) {
+    case 'recommender' :
+      return (!empty($response->data)) ? $response->data : array();
+      break;
+    default :
+      return $response;
+      break;
+  }
+}
+
+
+/**
+ * Execute Open Platform recommender request
+ * @param array $pids
+ * @param int $limit
+ * @return array
+ */
+function open_platform_recommender_request($pids, $limit) {
+  $method = 'recommender';
+  $request_object = (object) array(
+    'fields' => array ('string'),
+    'access_token' => 'qwerty',
+    'pretty' => true,
+    'timings' => true,
+    'recommender' => 'default',
+    'like' => $pids,
+    'dislike' => array ('870970-basis:12345678'),
+    'known' => array ('870970-basis:12345678'),
+    'discard' => array ('870970-basis:12345678'),
+    'limit' => $limit,
+  );
+  $params = array(
+    'requestObject' => $request_object,
+  );
+  return open_platform_request($method, $params);
+}
+
+
+

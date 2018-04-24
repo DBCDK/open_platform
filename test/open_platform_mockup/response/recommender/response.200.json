@@ -1,0 +1,33 @@
+{
+  "statusCode": 200,
+  "data": [
+    {
+      "title": "Harry Potter og Fønixordenen",
+      "creator": "Rowling",
+      "weight": 123,
+      "pid": "870970-basis:22629344",
+      "fromPid": "870970-basis:51989252"
+    },
+    {
+      "title": "Harry Potter vender tilbage",
+      "creator": "Rowling",
+      "weight": 121,
+      "pid": "870970-basis:22995154",
+      "fromPid": "870970-basis:51989252"
+    },
+    {
+      "title": "Harry Potter og hans venner",
+      "creator": "Rowling",
+      "weight": 125,
+      "pid": "870970-basis:23540703",
+      "fromPid": "870970-basis:51989252"
+    },
+    {
+      "title": "Harry Potter og hans venner vender tilbage",
+      "creator": "Rowling",
+      "weight": 129,
+      "pid": "870970-basis:26917921",
+      "fromPid": "870970-basis:51989252"
+    }
+  ]
+}
