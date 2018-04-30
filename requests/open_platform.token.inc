@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Open Platform : openPlatform class
+ * Open Platform : OpenPlatformTokenRequest class
  **/
 
-class OpenPlatformRequest extends TingClientRequest Implements ITingClientRequestCache {
+class OpenPlatformTokenRequest extends TingClientRequest Implements ITingClientRequestCache {
 
   /**
    * Request action.
@@ -20,10 +20,10 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
   public $curlOptions = NULL;
   
   /**
-   * Request object.
-   * @var object
+   * Request parameters.
+   * @var array
    */
-  private $requestObject;
+  private $requestParameters;
 
   
   /* Get cURL options. 
@@ -50,19 +50,18 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
    *
    * @return object
    */
-  public function getRequestObject() {
-    return $this->requestObject;
+  public function getRequestParameters() {
+    return $this->requestParameters;
   }
 
   /* 
    * Set JSON request object.
    *
-   * @param object $requestObject
+   * @param object $requestParameters
    */
-  public function setRequestObject($requestObject) {
-    $this->requestObject = $requestObject;
+  public function setRequestParameters($parameters) {
+    $this->requestParameters = $parameters;
   }
-  
 
   /* Implementation of ITingClientRequestCache */
 
@@ -129,7 +128,7 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
    * Extend TingClientRequest::getRequest to avoid xsd validation error.
    */
   public function getRequest() {
-    $params = array('curlOptions', 'requestObject');
+    $params = array('curlOptions', 'requestParameters');
     foreach ($params as $parameter) {
       $getter = 'get' . ucfirst($parameter);
       if ($value = $this->$getter()) {

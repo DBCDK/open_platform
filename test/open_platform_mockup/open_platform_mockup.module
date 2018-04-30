@@ -37,24 +37,20 @@ function open_platform_mockup_callback() {
 
 /**
  * Page callback.
+ * @param string $method
+ * @param string $status_code
+ * @return string
  */
 function open_platform_mockup_request($method = 'recommender', $status_code = '200') {
+  // watchdog('open_platform_mockup', 'Post variables: %post', $variables = array('%post' => print_r($_POST, 1)), WATCHDOG_NOTICE);
+  // watchdog('open_platform_mockup', 'Get variables: %get', $variables = array('%get' => print_r($_GET, 1)), WATCHDOG_NOTICE);
   $path = drupal_get_path('module', 'open_platform_mockup');
-  if (!file_exists( $path . '/response/' . $method )) {
+  if (!file_exists($path . '/response/' . $method . '/response.' . $status_code . '.json')) {
     throw new Exception('Mockup file directory don\'t exist: code: ' . $method . '.');
   }
   drupal_add_http_header('Content-Type', 'application/json');
-    switch ($status_code) {
-      case '200' :
-      case '401' :
-      case '500' :
-        http_response_code($status_code);
-        print file_get_contents($path . '/response/' . $method . '/response.' . $status_code . '.json');
-        break;
-      default :
-        throw new Exception('Untested status code: ' . $status_code . '.');
-        break;
-    }
+  http_response_code($status_code);
+  print file_get_contents($path . '/response/' . $method . '/response.' . $status_code . '.json');
   drupal_exit();
 }
 

@@ -1,8 +1,5 @@
 <?php
 
-// load cron job to renew access token
-require_once "includes/open_platform.cron.inc";
-
 /** Implements hook_formID_alter
  *
  * Adds settings for Open Platform client
@@ -29,6 +26,32 @@ function open_platform_form_ting_client_admin_webservices_settings_alter(&$form,
     '#required' => TRUE,
     '#default_value' => variable_get('openplatform_url', ''),
   );
+  $form['openPlatform']['openplatform_recommender_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Open Platform recommender URL'),
+    '#description' => t('URL to openPlatform recommender'),
+    '#required' => TRUE,
+    '#default_value' => variable_get('openplatform_recommender_url', ''),
+  );
+  $form['openPlatform']['openplatform_token_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Open Platform token URL'),
+    '#description' => t('URL to openPlatform tokens'),
+    '#required' => TRUE,
+    '#default_value' => variable_get('openplatform_token_url', ''),
+  );
+  $form['openPlatform']['openplatform_client_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Open Platform client ID'),
+    '#required' => TRUE,
+    '#default_value' => variable_get('openplatform_client_id', ''),
+  );
+  $form['openPlatform']['openplatform_client_secret'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Open Platform client secret'),
+    '#required' => TRUE,
+    '#default_value' => variable_get('openplatform_client_secret', ''),
+  );
 }
 
 
@@ -39,6 +62,10 @@ function open_platform_ting_client_webservice() {
   $ret = array();
   $ret['openPlatform']['class'] = 'OpenPlatformRequest';
   $ret['openPlatform']['url'] = 'openplatform_url';
+  $ret['openPlatformRecommender']['class'] = 'RecommenderRequest';
+  $ret['openPlatformRecommender']['url'] = 'openplatform_recommender_url';
+  $ret['openPlatformToken']['class'] = 'OpenPlatformTokenRequest';
+  $ret['openPlatformToken']['url'] = 'openplatform_token_url';
   return $ret;
 }
 
@@ -49,18 +76,29 @@ function open_platform_ting_client_webservice() {
  * @return json
  */
 function open_platform_request($method, $params) {
+  
+  $request = 'openPlatform' . ucfirst($method);
+  
+  $params['action'] = $method . 'Request';
+  $params['requestParameters']['access_token'] = variable_get('open_platform_access_token', NULL);
   $params['curlOptions'] = array(
     CURLOPT_POST => TRUE,
-    CURLOPT_POSTFIELDS => json_encode($params['requestObject']),
+    CURLOPT_POSTFIELDS => json_encode($params['requestParameters']),
     CURLOPT_HTTPHEADER => array(
       'Content-type: application/json',
       'Accept: application/json'
     )
   );
-  $params['action'] = $method . 'Request';
-  $client = new ting_client_class();
-  $response = $client->do_request('openPlatform', $params);
-  open_platform_parse_response($method, $response);
+  
+  try {
+    $client = new ting_client_class();
+    $response = $client->do_request($request, $params);
+    open_platform_parse_response($method, $response);
+	}
+	catch (Exception $e) {
+    watchdog('open_platform_authenticate', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
+	}
+  
   return $response;
 }
 
@@ -70,7 +108,7 @@ function open_platform_request($method, $params) {
  * @response $params
  * @return json
  */
-function open_platform_parse_response($method = NULL, $response = NULL) {
+function open_platform_parse_response($method = NULL, &$response = NULL) {
   if (!$response) {
     return array();
   }
@@ -80,14 +118,18 @@ function open_platform_parse_response($method = NULL, $response = NULL) {
   }
   switch ($method) {
     case 'recommender' :
-      return (!empty($response->data)) ? $response->data : array();
+      $response = (!empty($response->data)) ? $response->data : array();
+      break;
+    case 'authenticate' :
+      $response = (!empty($response->access_token)) ? $response->access_token : NULL;
+      if (!$response) {
+        throw new Exception("Empty Open Platform access token: " . print_r($response, 1));
+      }
       break;
     default :
-      return $response;
       break;
   }
 }
-
 
 /**
  * Execute Open Platform recommender request
@@ -95,25 +137,80 @@ function open_platform_parse_response($method = NULL, $response = NULL) {
  * @param int $limit
  * @return array
  */
-function open_platform_recommender_request($pids, $limit) {
+function open_platform_recommender_request($pids, $limit = 10) {
   $method = 'recommender';
-  $request_object = (object) array(
-    'fields' => array ('string'),
-    'access_token' => 'qwerty',
+  /* full parameters example
+  $params['requestParameters'] = array(
+    'fields' => array ('string'), // returned fields, ie. array('pid','val','from')
     'pretty' => true,
     'timings' => true,
-    'recommender' => 'default',
     'like' => $pids,
-    'dislike' => array ('870970-basis:12345678'),
-    'known' => array ('870970-basis:12345678'),
-    'discard' => array ('870970-basis:12345678'),
+    'ignore' => array ('870970-basis:12345678'),
     'limit' => $limit,
+    'offset' => 0,
+    'filters' => (object) array(
+      'authorFlood' => 0,
+      'subject' => array('string'),
+      'type' => array('string'),
+      'language' => array('string'),
+      'newerThan' => 0,
+      'olderThan' => 0,
+    ),
+    'boosters' => (object) array(
+      'loanCount' => 0,
+    )
   );
-  $params = array(
-    'requestObject' => $request_object,
+  */
+  // simplified parameters
+  $params['requestParameters'] = array(
+    'like' => $pids,
+    'limit' => $limit,
+    'offset' => 0,
   );
   return open_platform_request($method, $params);
 }
 
 
+/** Open Platform authenticate
+ *
+ * @return string
+ */
+function open_platform_authenticate_request() {
+  $params['action'] = 'authenticateRequest';
+  $params['requestParameters'] = array(
+    'grant_type' => 'password',
+    'username' => '@',
+    'password' => '@',
+  );
+  $params['curlOptions'] = array(
+    CURLOPT_POST => TRUE,
+    CURLOPT_USERNAME => variable_get('openplatform_client_id', NULL),
+    CURLOPT_PASSWORD => variable_get('openplatform_client_secret', NULL),
+    CURLOPT_POSTFIELDS => http_build_query($params['requestParameters']),
+    CURLOPT_HTTPHEADER => array(
+      'Content-type: application/x-www-form-urlencoded',
+      'Accept: application/json'
+    ),
+  );
+  try {
+    $client = new ting_client_class();
+    $response = $client->do_request('openPlatformToken', $params);
+    open_platform_parse_response('authenticate', $response);
+	}
+	catch (Exception $e) {
+    watchdog('open_platform_authenticate', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
+	}
+  variable_set('open_platform_access_token', $response);
+  return $response;
+}
+
+/**
+ * Implements hook_cron
+ *
+ * Get/update access token for Open Platform.
+ * Token expires in a month, so if we renew it with cron, it should never be expired.
+ */
+function open_platform_cron() {
+  open_platform_authenticate_request();
+}
 

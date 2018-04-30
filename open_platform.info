@@ -1,10 +1,12 @@
-name = Recommender client, using Open Platform
-description = Provides recommentations, based on PID(s)
+name = Open Platform client
+description = Implements Open Platform recommentations and token requests.
 core = 7.x
 version = 7.x-0.1
 package = Bibliotek.dk
 
-files[] = open_platform.request.inc
+files[] = requests/open_platform.inc
+files[] = requests/open_platform.recommender.inc
+files[] = requests/open_platform.token.inc
 files[] = test/open_platform.test
 
 dependencies[] = ting_client
