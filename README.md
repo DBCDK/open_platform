@@ -1,4 +1,5 @@
 Open Platform requests for TingClient.
 
-See also: https://openplatform.dbc.dk/v2/
-See also: https://github.com/DBCDK/serviceprovider/
+See also: API for the danish public libraries
+* [https://openplatform.dbc.dk/v2/]
+* [https://github.com/DBCDK/serviceprovider/]
