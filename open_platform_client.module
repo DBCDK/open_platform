@@ -10,7 +10,7 @@
  * @param $form
  * @param $form_state
  */
-function open_platform_form_ting_client_admin_webservices_settings_alter(&$form, &$form_state) {
+function open_platform_client_form_ting_client_admin_webservices_settings_alter(&$form, &$form_state) {
   $form['openPlatform'] = array(
     '#type' => 'fieldset',
     '#title' => 'Open Platform settings',
@@ -58,7 +58,7 @@ function open_platform_form_ting_client_admin_webservices_settings_alter(&$form,
 /**
  * Implements hook_ting_client_webservice (@see ting_client.module)
  * */
-function open_platform_ting_client_webservice() {
+function open_platform_client_ting_client_webservice() {
   $ret = array();
   $ret['openPlatform']['class'] = 'OpenPlatformRequest';
   $ret['openPlatform']['url'] = 'openplatform_url';
@@ -75,12 +75,12 @@ function open_platform_ting_client_webservice() {
  * @param $params
  * @return json
  */
-function open_platform_request($method, $params) {
+function open_platform_client_request($method, $params) {
   
   $request = 'openPlatform' . ucfirst($method);
   
   $params['action'] = $method . 'Request';
-  $params['requestParameters']['access_token'] = variable_get('open_platform_access_token', NULL);
+  $params['requestParameters']['access_token'] = variable_get('open_platform_client_access_token', NULL);
   $params['curlOptions'] = array(
     CURLOPT_POST => TRUE,
     CURLOPT_POSTFIELDS => json_encode($params['requestParameters']),
@@ -93,10 +93,10 @@ function open_platform_request($method, $params) {
   try {
     $client = new ting_client_class();
     $response = $client->do_request($request, $params);
-    open_platform_parse_response($method, $response);
+    open_platform_client_parse_response($method, $response);
 	}
 	catch (Exception $e) {
-    watchdog('open_platform_authenticate', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
+    watchdog('open_platform_client_authenticate', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
 	}
   
   return $response;
@@ -108,7 +108,7 @@ function open_platform_request($method, $params) {
  * @response $params
  * @return json
  */
-function open_platform_parse_response($method = NULL, &$response = NULL) {
+function open_platform_client_parse_response($method = NULL, &$response = NULL) {
   if (!$response) {
     return array();
   }
@@ -137,7 +137,7 @@ function open_platform_parse_response($method = NULL, &$response = NULL) {
  * @param int $limit
  * @return array
  */
-function open_platform_recommender_request($pids, $limit = 10) {
+function open_platform_client_recommender_request($pids, $limit = 10) {
   $method = 'recommender';
   /* full parameters example
   $params['requestParameters'] = array(
@@ -167,7 +167,7 @@ function open_platform_recommender_request($pids, $limit = 10) {
     'limit' => $limit,
     'offset' => 0,
   );
-  return open_platform_request($method, $params);
+  return open_platform_client_request($method, $params);
 }
 
 
@@ -175,7 +175,7 @@ function open_platform_recommender_request($pids, $limit = 10) {
  *
  * @return string
  */
-function open_platform_authenticate_request() {
+function open_platform_client_authenticate_request() {
   $params['action'] = 'authenticateRequest';
   $params['requestParameters'] = array(
     'grant_type' => 'password',
@@ -195,12 +195,12 @@ function open_platform_authenticate_request() {
   try {
     $client = new ting_client_class();
     $response = $client->do_request('openPlatformToken', $params);
-    open_platform_parse_response('authenticate', $response);
+    open_platform_client_parse_response('authenticate', $response);
 	}
 	catch (Exception $e) {
-    watchdog('open_platform_authenticate', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
+    watchdog('open_platform_client_authenticate', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
 	}
-  variable_set('open_platform_access_token', $response);
+  variable_set('open_platform_client_access_token', $response);
   return $response;
 }
 
@@ -210,7 +210,7 @@ function open_platform_authenticate_request() {
  * Get/update access token for Open Platform.
  * Token expires in a month, so if we renew it with cron, it should never be expired.
  */
-function open_platform_cron() {
-  open_platform_authenticate_request();
+function open_platform_client_cron() {
+  open_platform_client_authenticate_request();
 }
 
