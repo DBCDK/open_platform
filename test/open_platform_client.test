@@ -5,64 +5,67 @@
  * Test case for recommender.
  */
 
-class openPlatformTestCase extends DrupalUnitTestCase {
+class openPlatformTestCase extends DrupalWebTestCase {
+
+  protected $profile = 'testing';
 
   public static function getInfo() {
     return array(
       'name' => t('Open Recommender : request test'),
       'description' => t('Check if parsing a recommenderRequest return a valid array of recommendations'),
-      'group' => t('Bibliotek.dk - Open Platform'),
+      'group' => t('Bibliotek.dk - Open Platform Client'),
     );
   }
 
   public function setUp() {
-    parent::setUp(array('open_platform'));
+    /*
+    $this->_set_webservice_urls()
+    */
+    parent::setUp(
+      array(
+        'open_platform_client',
+        'open_platform_mockup',
+      )
+    );
   }
 
-  public function test_open_recommender_parse_response() {
-
-    // Test invalid response
-    /*
-    $response = new stdClass();
+  public function test_runner() {
+    $this->_test_open_recommender_parse_response();
+  }
+  
+  public function _test_open_recommender_parse_response() {
+    $pids = array('foo', 'bar');
     try {
-      $result = open_adhl_parse_response($response, 'testEmptyResponse');
-      $this->assertTrue('false', 'exception not thrown');
-
+      // $response = open_platform_client_recommender_request($pids, 10);
+      $response = file_get_contents(drupal_get_path('module', 'open_platform_mockup') . '/response/recommender/response.200.json');
+      open_platform_client_parse_response('recommender', $response);
+      $this->verbose(print_r($response,1));
+      $this->assertTrue($response[0]->title == 'Harry Potter', 'First element title is "Harry Potter"');
+      $this->assertTrue($response[0]->pid == '870970-basis:22629344', 'First element pid is "870970-basis:22629344"');
+      $this->assertTrue(sizeof($response) == 4, '4 elements in response.');
     } catch (Exception $e) {
-      $this->assertEqual($e->getMessage(), 'No ADHL response of type: testEmptyResponse in response', 'Exception is thrown');
+      $this->fail(print_r($e->getMessage(),1));
     }
-
-    // Test empty response
-    $response->topTenResponse = new stdClass();
-    $response->topTenResponse->pid = array();
-    $result = open_adhl_parse_response($response, 'topTenResponse');
-    $this->assertEqual($result, array(), 'no results');
-    // Test result with pids
-    $response->topTenResponse->pid = array();
-    $pid = new stdClass();
-    $pid->{'$'} = 'test-pid1';
-    $response->topTenResponse->pid[] = $pid;
-    $pid = new stdClass();
-    $pid->{'$'} = 'test-pid2';
-    $response->topTenResponse->pid[] = $pid;
-    $pid = new stdClass();
-    $pid->{'$'} = 'test-pid3';
-    $response->topTenResponse->pid[] = $pid;
-    $pid = new stdClass();
-    $pid->{'$'} = 'test-pid4';
-    $response->topTenResponse->pid[] = $pid;
-
-    $result = open_adhl_parse_response($response, 'topTenResponse');
-
-    $expected_result = array(
-      'test-pid1',
-      'test-pid2',
-      'test-pid3',
-      'test-pid4'
+    $this->verbose(variable_get(
+      'openplatform_token_url',
+      'bah! humbug!'
+    ));
+    
+  }
+  
+  private function _set_webservice_urls() {
+    variable_set(
+      'openplatform_url', 
+      $this->getAbsoluteUrl('/mockups/open_platform_mockup/request/')
     );
-    $this->assertEqual($result, $expected_result, '4 pids returned');
-    */
-    $this->assertEqual(TRUE, TRUE, 'true is true');
+    variable_set(
+      'openplatform_recommender_url', 
+      $this->getAbsoluteUrl('/mockups/open_platform_mockup/request/recommender/200')
+    );
+    variable_set(
+      'openplatform_token_url',
+      $this->getAbsoluteUrl('/mockups/open_platform_mockup/request/authenticate/200')
+    );
   }
   
 }

@@ -42,8 +42,6 @@ function open_platform_mockup_callback() {
  * @return string
  */
 function open_platform_mockup_request($method = 'recommender', $status_code = '200') {
-  // watchdog('open_platform_mockup', 'Post variables: %post', $variables = array('%post' => print_r($_POST, 1)), WATCHDOG_NOTICE);
-  // watchdog('open_platform_mockup', 'Get variables: %get', $variables = array('%get' => print_r($_GET, 1)), WATCHDOG_NOTICE);
   $path = drupal_get_path('module', 'open_platform_mockup');
   if (!file_exists($path . '/response/' . $method . '/response.' . $status_code . '.json')) {
     throw new Exception('Mockup file directory don\'t exist: code: ' . $method . '.');

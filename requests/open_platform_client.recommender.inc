@@ -2,12 +2,12 @@
 
 /**
  * @file
- * Open Platform : RecommenderRequest class
+ * Open Platform : OpenPlatformRecommenderRequest class
  * @see ting_client.module
  * @see ting_client_admin_webservices_settings
  **/
 
-class RecommenderRequest extends OpenPlatformRequest {
+class OpenPlatformRecommenderRequest extends OpenPlatformRequest {
   // Since the Open Platform Request has it's own url, instead of passing the 
   // recommender method as a parameter, we need to map the RecommenderRequest
   // aht. hook_ting_client_webservice 

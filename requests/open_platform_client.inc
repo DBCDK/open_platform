@@ -57,7 +57,7 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
   /* 
    * Set JSON request object.
    *
-   * @param array $requestParameters
+   * @param object $requestParameters
    */
   public function setRequestParameters($requestParameters) {
     $this->requestParameters = $requestParameters;
