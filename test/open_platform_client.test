@@ -18,9 +18,7 @@ class openPlatformTestCase extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    /*
-    $this->_set_webservice_urls()
-    */
+    // $this->_set_webservice_urls()
     parent::setUp(
       array(
         'open_platform_client',
@@ -35,9 +33,10 @@ class openPlatformTestCase extends DrupalWebTestCase {
   
   public function _test_open_recommender_parse_response() {
     $pids = array('foo', 'bar');
+    $this->_set_webservice_urls();
     try {
-      // $response = open_platform_client_recommender_request($pids, 10);
-      $response = file_get_contents(drupal_get_path('module', 'open_platform_mockup') . '/response/recommender/response.200.json');
+      $response = open_platform_client_recommender_request($pids, 10);
+      // $response = file_get_contents(drupal_get_path('module', 'open_platform_mockup') . '/response/recommender/response.200.json');
       open_platform_client_parse_response('recommender', $response);
       $this->verbose(print_r($response,1));
       $this->assertTrue($response[0]->title == 'Harry Potter', 'First element title is "Harry Potter"');
@@ -66,6 +65,7 @@ class openPlatformTestCase extends DrupalWebTestCase {
       'openplatform_token_url',
       $this->getAbsoluteUrl('/mockups/open_platform_mockup/request/authenticate/200')
     );
+    variable_set('open_platform_client_access_token', 'token');
   }
   
 }
