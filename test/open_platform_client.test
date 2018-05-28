@@ -18,7 +18,7 @@ class openPlatformTestCase extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    $this->_set_webservice_urls()
+    $this->_set_webservice_urls();
     parent::setUp(
       array(
         'open_platform_client',
