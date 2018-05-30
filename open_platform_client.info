@@ -1,7 +1,7 @@
 name = Open Platform client
-description = Implements Open Platform recommentations and token requests.
+description = Implements Open Platform recommendations and token requests.
 core = 7.x
-version = 7.x-0.1
+version = 7.x-1.0
 package = Bibliotek.dk
 
 files[] = requests/open_platform_client.inc
