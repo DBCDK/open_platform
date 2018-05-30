@@ -29,7 +29,12 @@ class openPlatformTestCase extends DrupalWebTestCase {
     );
   }
 
-  public function test_runner() {
+  public function tearDown(){
+    parent::tearDown();
+    module_disable(array('open_platform_mockup'));
+  }
+
+  public function testRunner() {
     $this->_test_open_recommender_parse_response();
   }
   
@@ -46,10 +51,11 @@ class openPlatformTestCase extends DrupalWebTestCase {
     } catch (Exception $e) {
       $this->fail(print_r($e->getMessage(),1));
     }
-    $this->_get_webservice_urls();
+    $this->_restore_webservice_urls();
   }
   
   private function _set_webservice_urls() {
+    $this->_get_webservice_urls();
     variable_set(
       'openplatform_url', 
       $this->getAbsoluteUrl('/mockups/open_platform_mockup/request/')
@@ -66,22 +72,25 @@ class openPlatformTestCase extends DrupalWebTestCase {
   }
   
   private function _get_webservice_urls() {
-    $this->verbose(variable_get(
-      'openplatform_url',
-      'bah! humbug!'
-    ));
-    $this->verbose(variable_get(
-      'openplatform_recommender_url',
-      'bah! humbug!'
-    ));
-    $this->verbose(variable_get(
-      'openplatform_token_url',
-      'bah! humbug!'
-    ));
-    $this->verbose(variable_get(
-      'open_platform_client_access_token',
-      'bah! humbug!'
-    ));
+    global $openplatform_url;
+    global $openplatform_recommender_url;
+    global $openplatform_token_url;
+    global $open_platform_client_access_token;
+    $openplatform_url = variable_get('openplatform_url', NULL);
+    $openplatform_recommender_url = variable_get('openplatform_recommender_url', NULL);
+    $openplatform_token_url = variable_get('openplatform_token_url', NULL);
+    $open_platform_client_access_token = variable_get('open_platform_client_access_token', NULL);
+  }
+  
+  private function _restore_webservice_urls() {
+    global $openplatform_url;
+    global $openplatform_recommender_url;
+    global $openplatform_token_url;
+    global $open_platform_client_access_token;
+    variable_set('openplatform_url', $openplatform_url));
+    variable_set('openplatform_recommender_url', $openplatform_recommender_url));
+    variable_set('openplatform_token_url', $openplatform_token_url));
+    variable_set('open_platform_client_access_token', $open_platform_client_access_token);
   }
   
 }

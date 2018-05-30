@@ -145,7 +145,7 @@ function open_platform_client_parse_response($method = NULL, &$response = NULL) 
  * @param int $limit
  * @return array
  */
-function open_platform_client_recommender_request(array $pids, int $limit = 10) {
+function open_platform_client_recommender_request($pids = array(), $limit = 10) {
   /* full parameters example
   $params['requestParameters'] = array(
     'fields' => array ('string'), // returned fields, ie. array('pid','val','from')
