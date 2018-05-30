@@ -11,18 +11,20 @@ class openPlatformTestCase extends DrupalWebTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => t('Open Recommender : request test'),
+      'name' => t('Open Platform Client : Recommender request test'),
       'description' => t('Check if parsing a recommenderRequest return a valid array of recommendations'),
       'group' => t('Bibliotek.dk - Open Platform Client'),
     );
   }
 
   public function setUp() {
-    // $this->_set_webservice_urls()
+    $this->_set_webservice_urls();
     parent::setUp(
       array(
         'open_platform_client',
         'open_platform_mockup',
+        'features',
+        'bibdk_webservice_settings_develop'
       )
     );
   }
@@ -38,18 +40,13 @@ class openPlatformTestCase extends DrupalWebTestCase {
       $response = open_platform_client_recommender_request($pids, 10);
       // $response = file_get_contents(drupal_get_path('module', 'open_platform_mockup') . '/response/recommender/response.200.json');
       open_platform_client_parse_response('recommender', $response);
-      $this->verbose(print_r($response,1));
       $this->assertTrue($response[0]->title == 'Harry Potter', 'First element title is "Harry Potter"');
       $this->assertTrue($response[0]->pid == '870970-basis:22629344', 'First element pid is "870970-basis:22629344"');
       $this->assertTrue(sizeof($response) == 4, '4 elements in response.');
     } catch (Exception $e) {
       $this->fail(print_r($e->getMessage(),1));
     }
-    $this->verbose(variable_get(
-      'openplatform_token_url',
-      'bah! humbug!'
-    ));
-    
+    $this->_get_webservice_urls();
   }
   
   private function _set_webservice_urls() {
@@ -66,6 +63,25 @@ class openPlatformTestCase extends DrupalWebTestCase {
       $this->getAbsoluteUrl('/mockups/open_platform_mockup/request/authenticate/200')
     );
     variable_set('open_platform_client_access_token', 'token');
+  }
+  
+  private function _get_webservice_urls() {
+    $this->verbose(variable_get(
+      'openplatform_url',
+      'bah! humbug!'
+    ));
+    $this->verbose(variable_get(
+      'openplatform_recommender_url',
+      'bah! humbug!'
+    ));
+    $this->verbose(variable_get(
+      'openplatform_token_url',
+      'bah! humbug!'
+    ));
+    $this->verbose(variable_get(
+      'open_platform_client_access_token',
+      'bah! humbug!'
+    ));
   }
   
 }
