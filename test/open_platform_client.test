@@ -37,7 +37,7 @@ class openPlatformTestCase extends DrupalWebTestCase {
   public function testRunner() {
     $this->_test_open_recommender_parse_response();
   }
-  
+
   public function _test_open_recommender_parse_response() {
     $pids = array('foo', 'bar');
     $this->_set_webservice_urls();
@@ -53,15 +53,15 @@ class openPlatformTestCase extends DrupalWebTestCase {
     }
     $this->_restore_webservice_urls();
   }
-  
+
   private function _set_webservice_urls() {
     $this->_get_webservice_urls();
     variable_set(
-      'openplatform_url', 
+      'openplatform_url',
       $this->getAbsoluteUrl('/mockups/open_platform_mockup/request/')
     );
     variable_set(
-      'openplatform_recommender_url', 
+      'openplatform_recommender_url',
       $this->getAbsoluteUrl('/mockups/open_platform_mockup/request/recommender/200')
     );
     variable_set(
@@ -70,7 +70,7 @@ class openPlatformTestCase extends DrupalWebTestCase {
     );
     variable_set('open_platform_client_access_token', 'token');
   }
-  
+
   private function _get_webservice_urls() {
     global $openplatform_url;
     global $openplatform_recommender_url;
@@ -81,16 +81,16 @@ class openPlatformTestCase extends DrupalWebTestCase {
     $openplatform_token_url = variable_get('openplatform_token_url', NULL);
     $open_platform_client_access_token = variable_get('open_platform_client_access_token', NULL);
   }
-  
+
   private function _restore_webservice_urls() {
     global $openplatform_url;
     global $openplatform_recommender_url;
     global $openplatform_token_url;
     global $open_platform_client_access_token;
-    variable_set('openplatform_url', $openplatform_url));
-    variable_set('openplatform_recommender_url', $openplatform_recommender_url));
-    variable_set('openplatform_token_url', $openplatform_token_url));
+    variable_set('openplatform_url', $openplatform_url);
+    variable_set('openplatform_recommender_url', $openplatform_recommender_url);
+    variable_set('openplatform_token_url', $openplatform_token_url);
     variable_set('open_platform_client_access_token', $open_platform_client_access_token);
   }
-  
+
 }
