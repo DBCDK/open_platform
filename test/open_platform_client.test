@@ -27,6 +27,7 @@ class openPlatformTestCase extends DrupalWebTestCase {
         'bibdk_webservice_settings_develop'
       )
     );
+    menu_rebuild();
   }
 
   public function tearDown(){
