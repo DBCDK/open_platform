@@ -18,7 +18,6 @@ class openPlatformTestCase extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    $this->_set_webservice_urls();
     parent::setUp(
       array(
         'open_platform_client',
@@ -40,10 +39,10 @@ class openPlatformTestCase extends DrupalWebTestCase {
   }
 
   public function _test_open_recommender_parse_response() {
-    $pids = array('foo', 'bar');
     $this->_set_webservice_urls();
+    $pids = array('foo', 'bar');
     try {
-      //$response = open_platform_client_recommender_request($pids, 10);
+      // $response = open_platform_client_recommender_request($pids, 10);
       $response = file_get_contents(drupal_get_path('module', 'open_platform_mockup') . '/response/recommender/response.200.json');
       open_platform_client_parse_response('recommender', $response);
       $this->assertTrue($response[0]->title == 'Harry Potter', 'First element title is "Harry Potter"');
@@ -73,25 +72,17 @@ class openPlatformTestCase extends DrupalWebTestCase {
   }
 
   private function _get_webservice_urls() {
-    global $openplatform_url;
-    global $openplatform_recommender_url;
-    global $openplatform_token_url;
-    global $open_platform_client_access_token;
-    $openplatform_url = variable_get('openplatform_url', NULL);
-    $openplatform_recommender_url = variable_get('openplatform_recommender_url', NULL);
-    $openplatform_token_url = variable_get('openplatform_token_url', NULL);
-    $open_platform_client_access_token = variable_get('open_platform_client_access_token', NULL);
+    $GLOBALS['tmp_openplatform_url'] = variable_get('openplatform_url', NULL);
+    $GLOBALS['tmp_openplatform_recommender_url'] = variable_get('openplatform_recommender_url', NULL);
+    $GLOBALS['tmp_openplatform_token_url'] = variable_get('openplatform_token_url', NULL);
+    $GLOBALS['tmp_open_platform_client_access_token'] = variable_get('open_platform_client_access_token', NULL);
   }
 
   private function _restore_webservice_urls() {
-    global $openplatform_url;
-    global $openplatform_recommender_url;
-    global $openplatform_token_url;
-    global $open_platform_client_access_token;
-    variable_set('openplatform_url', $openplatform_url);
-    variable_set('openplatform_recommender_url', $openplatform_recommender_url);
-    variable_set('openplatform_token_url', $openplatform_token_url);
-    variable_set('open_platform_client_access_token', $open_platform_client_access_token);
+    variable_set('openplatform_url', $GLOBALS['tmp_openplatform_url']);
+    variable_set('openplatform_recommender_url', $GLOBALS['tmp_openplatform_recommender_url']);
+    variable_set('openplatform_token_url', $GLOBALS['tmp_openplatform_token_url']);
+    variable_set('open_platform_client_access_token', $GLOBALS['tmp_open_platform_client_access_token']);
   }
 
 }
