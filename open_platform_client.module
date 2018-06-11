@@ -191,8 +191,7 @@ function open_platform_client_authenticate_request() {
   );
   $params['curlOptions'] = array(
     CURLOPT_POST => TRUE,
-    CURLOPT_USERNAME => variable_get('openplatform_client_id', NULL),
-    CURLOPT_PASSWORD => variable_get('openplatform_client_secret', NULL),
+    CURLOPT_USERPWD => variable_get('openplatform_client_id', NULL) . ':' . variable_get('openplatform_client_secret', NULL),
     CURLOPT_POSTFIELDS => http_build_query($params['requestParameters']),
     CURLOPT_HTTPHEADER => array(
       'Content-type: application/x-www-form-urlencoded',
