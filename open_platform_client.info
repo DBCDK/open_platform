@@ -4,9 +4,9 @@ core = 7.x
 version = 7.x-1.5
 package = Bibliotek.dk
 
-files[] = requests/open_platform_client.inc
-files[] = requests/open_platform_client.recommender.inc
-files[] = requests/open_platform_client.token.inc
+files[] = requests/OpenPlatformRecommenderRequest.inc
+files[] = requests/OpenPlatformRequest.inc
+files[] = requests/OpenPlatformTokenRequest.inc
 files[] = test/open_platform_client.test
 
 dependencies[] = ting_client
