@@ -185,15 +185,18 @@ function open_platform_client_recommender_request($pids = array(), $limit = 10) 
  */
 function open_platform_client_authenticate_request() {
   $params['action'] = 'authenticateRequest';
-  $params['requestParameters'] = array(
+
+  // pjo : bug. on dringo http_build_query add an extra 'amp' which makes
+  // the request fail. - simple us a string
+  /*$params['requestParameters'] = array(
     'grant_type' => 'password',
     'username' => '@',
     'password' => '@',
-  );
+  );*/
   $params['curlOptions'] = array(
     CURLOPT_POST => TRUE,
     CURLOPT_USERPWD => variable_get('openplatform_client_id', NULL) . ':' . variable_get('openplatform_client_secret', NULL),
-    CURLOPT_POSTFIELDS => http_build_query($params['requestParameters']),
+    CURLOPT_POSTFIELDS => 'grant_type=password&username=@&password=@',
     CURLOPT_HTTPHEADER => array(
       'Content-type: application/x-www-form-urlencoded',
       'Accept: application/json'
