@@ -78,10 +78,9 @@ function open_platform_client_ting_client_webservice() {
  * @return json
  */
 function open_platform_client_request($method, $params, $retry = TRUE) {
-  
   $request = 'openPlatform' . ucfirst($method);
   $response = NULL;
-  
+
   $params['action'] = $method . 'Request';
   $params['requestParameters']['access_token'] = variable_get('open_platform_client_access_token', NULL);
   $params['curlOptions'] = array(
@@ -92,7 +91,7 @@ function open_platform_client_request($method, $params, $retry = TRUE) {
       'Accept: application/json'
     )
   );
-  
+
   try {
     $client = new ting_client_class();
     $response = $client->do_request($request, $params);
@@ -106,6 +105,7 @@ function open_platform_client_request($method, $params, $retry = TRUE) {
 	}
 	catch (Exception $e) {
     watchdog('open_platform_client_authenticate', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
+    return NULL;
 	}
   return $response;
 }
@@ -115,10 +115,11 @@ function open_platform_client_request($method, $params, $retry = TRUE) {
  * @param $method
  * @response $params
  * @return json
+ * @throws Exception
  */
 function open_platform_client_parse_response($method = NULL, &$response = NULL) {
   if (!$response) {
-    return array();
+    throw new Exception("Failed to get token: " . print_r($response, 1));
   }
   $response = json_decode($response);
   if (!$response) {
@@ -167,7 +168,7 @@ function open_platform_client_recommender_request($pids = array(), $limit = 10) 
       'loanCount' => 0,
     )
   ); */
-  
+
   // simplified parameters
   $params['requestParameters'] = array(
     'like' => $pids,
@@ -202,10 +203,16 @@ function open_platform_client_authenticate_request() {
   try {
     $client = new ting_client_class();
     $response = $client->do_request('openPlatformToken', $params);
+    if(!$response){
+      watchdog('open_platform', 'Could not authenticate @params', array('@params' => print_r($params)), WATCHDOG_ERROR);
+
+    }
     open_platform_client_parse_response('authenticate', $response);
 	}
 	catch (Exception $e) {
     watchdog('open_platform', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
+    // rethrow
+    throw $e;
 	}
   variable_set('open_platform_client_access_token', $response);
   return $response;
