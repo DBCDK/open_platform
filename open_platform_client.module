@@ -142,19 +142,18 @@ function open_platform_client_parse_response($method = NULL, &$response = NULL) 
 
 /**
  * Execute Open Platform recommender request
- * @param array $pids
- * @param int $limit
+ * @param array $requestParameters
  * @return array
  */
-function open_platform_client_recommender_request($pids = array(), $limit = 10) {
+function open_platform_client_recommender_request($requestParameters = array()) {
   /* full parameters example
   $params['requestParameters'] = array(
     'fields' => array ('string'), // returned fields, ie. array('pid','val','from')
     'pretty' => true,
     'timings' => true,
-    'like' => $pids,
+    'like' => array('870970-basis:12345678'),
     'ignore' => array('870970-basis:12345678'),
-    'limit' => $limit,
+    'limit' => 10,
     'offset' => 0,
     'filters' => (object) array(
       'authorFlood' => 0,
@@ -169,12 +168,8 @@ function open_platform_client_recommender_request($pids = array(), $limit = 10) 
     )
   ); */
 
-  // simplified parameters
-  $params['requestParameters'] = array(
-    'like' => $pids,
-    'limit' => $limit,
-    'offset' => 0,
-  );
+  $params['requestParameters'] = $requestParameters;
+  
   return open_platform_client_request('recommender', $params);
 }
 
@@ -188,11 +183,11 @@ function open_platform_client_authenticate_request() {
 
   // pjo : bug. on dringo http_build_query add an extra 'amp' which makes
   // the request fail. - simple us a string
-  /*$params['requestParameters'] = array(
-    'grant_type' => 'password',
-    'username' => '@',
-    'password' => '@',
-  );*/
+  /* $params['requestParameters'] = array(
+     'grant_type' => 'password',
+     'username' => '@',
+     'password' => '@',
+  ); */
   $params['curlOptions'] = array(
     CURLOPT_POST => TRUE,
     CURLOPT_USERPWD => variable_get('openplatform_client_id', NULL) . ':' . variable_get('openplatform_client_secret', NULL),
@@ -206,9 +201,8 @@ function open_platform_client_authenticate_request() {
   try {
     $client = new ting_client_class();
     $response = $client->do_request('openPlatformToken', $params);
-    if(!$response){
+    if (!$response){
       watchdog('open_platform', 'Could not authenticate @params', array('@params' => print_r($params)), WATCHDOG_ERROR);
-
     }
     open_platform_client_parse_response('authenticate', $response);
 	}
