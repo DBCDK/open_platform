@@ -226,9 +226,6 @@ function open_platform_client_authenticate_request() {
   try {
     $client = new ting_client_class();
     $response = $client->do_request('openPlatformToken', $params);
-
-    dpm($response,'AUTH');
-
     if (!$response){
       watchdog('open_platform', 'Could not authenticate @params', array('@params' => print_r($params)), WATCHDOG_ERROR);
     }
