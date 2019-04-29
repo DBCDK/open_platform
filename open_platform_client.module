@@ -105,7 +105,6 @@ function open_platform_client_request($method, $params, $retry = TRUE) {
 	}
 	catch (Exception $e) {
     watchdog('open_platform_client_authenticate', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
-    dpm($e->getMessage(), 'ERROR');
     return NULL;
 	}
   return $response;
