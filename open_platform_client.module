@@ -102,11 +102,10 @@ function open_platform_client_request($method, $params, $retry = TRUE) {
       }
     }
     $response = open_platform_client_parse_response($method, $response);
-	}
-	catch (Exception $e) {
+  } catch (Exception $e) {
     watchdog('open_platform_client_authenticate', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
     return NULL;
-	}
+  }
   return $response;
 }
 
@@ -114,10 +113,10 @@ function open_platform_client_request($method, $params, $retry = TRUE) {
  * Implements hook_requirements
  * (to get a status on the status report page)
  */
-function open_platform_client_requirements($phase){
-  if($phase === 'runtime'){
+function open_platform_client_requirements($phase) {
+  if ($phase === 'runtime') {
     $requirements = array();
-    if(!(variable_get('open_platform_client_access_token', NULL))){
+    if (!(variable_get('open_platform_client_access_token', NULL))) {
       $requirements['open_platform'] = array(
         'title' => 'Open platform',
         'value' => 'no access token aquired - run cron to get one',
@@ -225,16 +224,15 @@ function open_platform_client_authenticate_request() {
   try {
     $client = new ting_client_class();
     $response = $client->do_request('openPlatformToken', $params);
-    if (!$response){
+    if (!$response) {
       watchdog('open_platform', 'Could not authenticate @params', array('@params' => print_r($params)), WATCHDOG_ERROR);
     }
     open_platform_client_parse_response('authenticate', $response);
-	}
-	catch (Exception $e) {
+  } catch (Exception $e) {
     watchdog('open_platform', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
     // rethrow
     throw $e;
-	}
+  }
   variable_set('open_platform_client_access_token', $response);
   return $response;
 }
