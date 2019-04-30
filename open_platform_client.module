@@ -95,8 +95,8 @@ function open_platform_client_request($method, $params, $retry = TRUE) {
   try {
     $client = new ting_client_class();
     $response = $client->do_request($request, $params);
-    if ($error = $client->getError()) {
-      if ($retry && strpos($error['message'], 'invalid_token') !== false) {
+    if ($error = $client->getError() || isset($response['error'])) {
+      if ($retry && strpos($response['errorMessage'], 'invalid_token') !== false) {
         open_platform_client_authenticate_request();
         return open_platform_client_request($method, $params, FALSE);
       }
@@ -131,7 +131,7 @@ function open_platform_client_requirements($phase) {
 /** Generic parse function for Open Platform response.
  * @param $method
  * @response $params
- * @return json
+ * @return stdClass|array
  * @throws Exception
  */
 function open_platform_client_parse_response($method = NULL, $response = NULL) {
@@ -141,19 +141,11 @@ function open_platform_client_parse_response($method = NULL, $response = NULL) {
 
   switch ($method) {
     case 'suggest' :
-      return $response;
+      break;
     case 'recommender' :
-      $response = json_decode($response);
-      if (!$response) {
-        throw new Exception("Can't decode response as JSON: " . print_r($response, 1));
-      }
       $response = (!empty($response->data)) ? $response->data : array();
       break;
     case 'authenticate' :
-      $response = json_decode($response);
-      if (!$response) {
-        throw new Exception("Can't decode response as JSON: " . print_r($response, 1));
-      }
       $response = (!empty($response->access_token)) ? $response->access_token : NULL;
       if (!$response) {
         throw new Exception("Empty Open Platform access token: " . print_r($response, 1));
@@ -227,12 +219,13 @@ function open_platform_client_authenticate_request() {
     if (!$response) {
       watchdog('open_platform', 'Could not authenticate @params', array('@params' => print_r($params)), WATCHDOG_ERROR);
     }
-    open_platform_client_parse_response('authenticate', $response);
+    $response = open_platform_client_parse_response('authenticate', $response);
   } catch (Exception $e) {
     watchdog('open_platform', $e->getMessage(), array(), WATCHDOG_CRITICAL, NULL);
     // rethrow
     throw $e;
   }
+
   variable_set('open_platform_client_access_token', $response);
   return $response;
 }
