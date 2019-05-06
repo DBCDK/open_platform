@@ -7,6 +7,7 @@ package = Bibliotek.dk
 files[] = requests/OpenPlatformRecommenderRequest.inc
 files[] = requests/OpenPlatformRequest.inc
 files[] = requests/OpenPlatformTokenRequest.inc
+files[] = requests/OpenPlatformSuggestRequest.inc
 files[] = test/open_platform_client.test
 
 dependencies[] = ting_client

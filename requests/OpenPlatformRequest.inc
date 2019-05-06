@@ -18,17 +18,17 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
    * @var array
    */
   public $curlOptions = NULL;
-  
+
   /**
    * Request object.
    * @var object
    */
   private $requestParameters;
 
-  
-  /* Get cURL options. 
+
+  /* Get cURL options.
    *
-   * we include CURL options in the request, in order to be able configure MicroCURL, 
+   * we include CURL options in the request, in order to be able configure MicroCURL,
    * but the params are unset before we do TingRestClient->call().
    *
    * @return array
@@ -45,7 +45,7 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
     $this->curlOptions = $options;
   }
 
-  /* 
+  /*
    * Get JSON request object.
    *
    * @return object
@@ -54,7 +54,7 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
     return $this->requestParameters;
   }
 
-  /* 
+  /*
    * Set JSON request object.
    *
    * @param object $requestParameters
@@ -63,10 +63,10 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
     $this->requestParameters = $requestParameters;
   }
 
-  
+
   /* Implementation of ITingClientRequestCache */
 
-  /** \brief ITingClientRequestCache::checkResponse; 
+  /** \brief ITingClientRequestCache::checkResponse;
    * Check if response is empty. If so, tell ting-client not to cache
    * @param $response
    * @return bool
@@ -80,7 +80,7 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
     return TRUE;
   }
 
-  
+
   /** \brief ITingClientRequestCache::cacheEnable; Check if cache is enabled
    *
    * @return value of variable (drupal_get)
@@ -90,7 +90,7 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
     return variable_get($class_name . TingClientRequest::cache_enable);
   }
 
-  
+
   /** \brief ITingClientRequestCache::cacheTimeout; Set timeout of cache
    *
    * @return mixed value of variable (variable_get)
@@ -100,7 +100,7 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
     return variable_get($class_name . TingClientRequest::cache_lifetime, '1');
   }
 
-  
+
   /** \brief ITingClientRequestCache::cacheBin;
    *
    * @return string; name of cachebin
@@ -108,7 +108,7 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
   public function cacheBin() {
     return 'cache_open_platform';
   }
-  
+
 
   /* Implementation of TingClientRequest */
 
@@ -139,8 +139,8 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
     }
     return $this;
   }
-  
-  /* 
+
+  /*
    * Extend TingClientRequest::getClientType to use REST client.
    */
   public function getClientType() {
@@ -153,12 +153,4 @@ class OpenPlatformRequest extends TingClientRequest Implements ITingClientReques
   public function processResponse(stdClass $response) {
     return $response;
   }
-
-  /*
-   * Extend TingClientRequest::parseResponse.
-   */
-  public function parseResponse($result) {
-    return $result;
-  }
-  
 }
