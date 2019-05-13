@@ -77,7 +77,7 @@ function open_platform_client_ting_client_webservice() {
 /** Generic request function to call Open Platform
  * @param $method
  * @param $params
- * @return json
+ * @return stdClass
  */
 function open_platform_client_request($method, $params, $retry = TRUE) {
   $request = 'openPlatform' . ucfirst($method);
@@ -95,8 +95,9 @@ function open_platform_client_request($method, $params, $retry = TRUE) {
   try {
     $client = new ting_client_class();
     $response = $client->do_request($request, $params);
-    if ($error = $client->getError() || isset($response['error'])) {
-      if ($retry && strpos($response['errorMessage'], 'invalid_token') !== false) {
+    $error = $client->getError();
+    if ($error || isset($response['error'])) {
+      if ($retry && (strpos($response['errorMessage'], 'invalid_token') !== false || $error['code'] !== 200)) {
         open_platform_client_authenticate_request();
         return open_platform_client_request($method, $params, FALSE);
       }
@@ -143,9 +144,11 @@ function open_platform_client_parse_response($method = NULL, $response = NULL) {
     case 'suggest' :
       break;
     case 'recommender' :
+      $response = json_decode($response);
       $response = (!empty($response->data)) ? $response->data : array();
       break;
     case 'authenticate' :
+      $response = json_decode($response);
       $response = (!empty($response->access_token)) ? $response->access_token : NULL;
       if (!$response) {
         throw new Exception("Empty Open Platform access token: " . print_r($response, 1));
