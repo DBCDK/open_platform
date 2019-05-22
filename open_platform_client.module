@@ -95,6 +95,7 @@ function open_platform_client_request($method, $params, $retry = TRUE) {
   try {
     $client = new ting_client_class();
     $response = $client->do_request($request, $params);
+
     $error = $client->getError();
     if ($error || isset($response['error'])) {
       if ($retry && (strpos($response['errorMessage'], 'invalid_token') !== false || $error['code'] !== 200)) {
