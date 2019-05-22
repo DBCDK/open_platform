@@ -1,5 +1,23 @@
 <?php
 class OpenPlatformSuggestRequest extends OpenPlatformRequest{
+  private $query;
+  public function setQuery($query){
+    $this->query = $query;
+  }
+
+  public function getQuery(){
+    return $this->query;
+  }
+
+  /**
+   * Set default outputType or NOT (@see TingClientRequestAdapter.php for usage)
+   * if set to FALSE extending class SHOULD implement (override) parseResponse method
+   * and handle parsing of response on its own - defaults to TRUE
+   * @return bool
+   */
+  public function defaultOutputType(){
+    return FALSE;
+  }
   /*
  * Implements TingClientRequest::processResponse.
  */
