@@ -1,11 +1,15 @@
 <?php
-class OpenPlatformSuggestRequest extends OpenPlatformRequest{
+
+class OpenPlatformSuggestRequest extends OpenPlatformRequest {
   private $query;
-  public function setQuery($query){
+
+  // getter
+  public function setQuery($query) {
     $this->query = $query;
   }
 
-  public function getQuery(){
+  // setter
+  public function getQuery() {
     return $this->query;
   }
 
@@ -15,9 +19,10 @@ class OpenPlatformSuggestRequest extends OpenPlatformRequest{
    * and handle parsing of response on its own - defaults to TRUE
    * @return bool
    */
-  public function defaultOutputType(){
+  public function defaultOutputType() {
     return FALSE;
   }
+
   /*
  * Implements TingClientRequest::processResponse.
  */
