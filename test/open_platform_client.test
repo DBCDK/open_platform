@@ -44,7 +44,7 @@ class openPlatformTestCase extends DrupalWebTestCase {
     try {
       // $response = open_platform_client_recommender_request($pids, 10);
       $response = file_get_contents(drupal_get_path('module', 'open_platform_mockup') . '/response/recommender/response.200.json');
-      open_platform_client_parse_response('recommender', $response);
+      $response = open_platform_client_parse_response('recommender', $response);
       $this->assertTrue($response[0]->title == 'Harry Potter', 'First element title is "Harry Potter"');
       $this->assertTrue($response[0]->pid == '870970-basis:22629344', 'First element pid is "870970-basis:22629344"');
       $this->assertTrue(sizeof($response) == 4, '4 elements in response.');
