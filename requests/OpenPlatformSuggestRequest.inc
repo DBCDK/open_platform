@@ -23,6 +23,19 @@ class OpenPlatformSuggestRequest extends OpenPlatformRequest {
     return FALSE;
   }
 
+   /** overwrite TingClientRequest::checkResponse;
+   * Check if response is empty. If so, tell ting-client not to cache
+   * @param array $response
+   * @return bool
+   */
+  public function checkResponse($response) {
+    // do NOT cache if result is empty
+    if (!$response || empty($response['data'])) {
+      return FALSE;
+    }
+    return TRUE;
+  }
+
   /*
  * Implements TingClientRequest::processResponse.
  */
