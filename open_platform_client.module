@@ -149,7 +149,9 @@ function open_platform_client_parse_response($method = NULL, $response = NULL) {
       $response = (!empty($response->data)) ? $response->data : array();
       break;
     case 'authenticate' :
-      $response = json_decode($response);
+      if(is_string($response)) {
+        $response = json_decode($response);
+      }
       $response = (!empty($response->access_token)) ? $response->access_token : NULL;
       if (!$response) {
         throw new Exception("Empty Open Platform access token: " . print_r($response, 1));
