@@ -19,26 +19,26 @@ function open_platform_client_form_ting_client_admin_webservices_settings_alter(
     '#collapsed' => TRUE,
     '#tree' => FALSE,
   );
-  $form['openPlatform']['openplatform_url'] = array(
+  $form['openPlatform']['OpenPlatformRequest_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Open Platform URL'),
     '#description' => t('URL to openPlatform webservice'),
     '#required' => TRUE,
-    '#default_value' => variable_get('openplatform_url', ''),
+    '#default_value' => variable_get('OpenPlatformRequest_url', ''),
   );
-  $form['openPlatform']['openplatform_recommender_url'] = array(
+  $form['openPlatform']['OpenPlatformRecommenderRequest_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Open Platform recommender URL'),
     '#description' => t('URL to openPlatform recommender'),
     '#required' => TRUE,
-    '#default_value' => variable_get('openplatform_recommender_url', ''),
+    '#default_value' => variable_get('OpenPlatformRecommenderRequest_url', ''),
   );
-  $form['openPlatform']['openplatform_token_url'] = array(
+  $form['openPlatform']['OpenPlatformTokenRequest_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Open Platform token URL'),
     '#description' => t('URL to openPlatform tokens'),
     '#required' => TRUE,
-    '#default_value' => variable_get('openplatform_token_url', ''),
+    '#default_value' => variable_get('OpenPlatformTokenRequest_url', ''),
   );
   $form['openPlatform']['openplatform_client_id'] = array(
     '#type' => 'textfield',
@@ -62,14 +62,14 @@ function open_platform_client_ting_client_webservice() {
   // We're doing each OpenPlatform method as extensions of OpenPlatformRequest,
   // so it, and each request, need an url & class value.
   $ret = array();
-  $ret['openPlatform']['class'] = 'OpenPlatformRequest';
-  $ret['openPlatform']['url'] = 'openplatform_url';
-  $ret['openPlatformRecommender']['class'] = 'OpenPlatformRecommenderRequest';
-  $ret['openPlatformRecommender']['url'] = 'openplatform_recommender_url';
-  $ret['openPlatformToken']['class'] = 'OpenPlatformTokenRequest';
-  $ret['openPlatformToken']['url'] = 'openplatform_token_url';
-  $ret['openPlatformSuggest']['class'] = 'OpenPlatformSuggestRequest';
-  $ret['openPlatformSuggest']['url'] = 'OpenPlatformSuggestRequest_url';
+  $ret['OpenPlatformRequest']['class'] = 'OpenPlatformRequest';
+  $ret['OpenPlatformRequest']['url'] = 'OpenPlatformRequest_url';
+  $ret['OpenPlatformRecommenderRequest']['class'] = 'OpenPlatformRecommenderRequest';
+  $ret['OpenPlatformRecommenderRequest']['url'] = 'OpenPlatformRecommenderRequest_url';
+  $ret['OpenPlatformTokenRequest']['class'] = 'OpenPlatformTokenRequest';
+  $ret['OpenPlatformTokenRequest']['url'] = 'OpenPlatformTokenRequest_url';
+  $ret['OpenPlatformSuggestRequest']['class'] = 'OpenPlatformSuggestRequest';
+  $ret['OpenPlatformSuggestRequest']['url'] = 'OpenPlatformSuggestRequest_url';
   return $ret;
 }
 
@@ -80,7 +80,7 @@ function open_platform_client_ting_client_webservice() {
  * @return stdClass
  */
 function open_platform_client_request($method, $params, $retry = TRUE) {
-  $request = 'openPlatform' . ucfirst($method);
+  $request = 'OpenPlatform' . ucfirst($method);
   $response = NULL;
   $params['action'] = $method . 'Request';
   $params['requestParameters']['access_token'] = variable_get('open_platform_client_access_token', NULL);
