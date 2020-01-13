@@ -23,7 +23,7 @@ class openPlatformTestCase extends DrupalWebTestCase {
         'open_platform_client',
         'open_platform_mockup',
         'features',
-        'bibdk_webservice_settings_develop'
+        'bibdk_webservice_settings_operational'
       )
     );
     menu_rebuild();
